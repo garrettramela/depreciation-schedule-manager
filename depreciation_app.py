@@ -2,19 +2,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 import io
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 st.header("Assets Table")
-if manager.assets:
-    df = manager.export_asset_list()
-    gb = GridOptionsBuilder.from_dataframe(df)
-    gb.configure_default_column(editable=False, filterable=True, sortable=True, resizable=True)
-    gb.configure_selection('single', use_checkbox=True)
-    grid_options = gb.build()
-
-    AgGrid(df, gridOptions=grid_options, theme='streamlit', enable_enterprise_modules=False)
-
-# Use Streamlit's session state to persist the manager across reruns
 if 'manager' not in st.session_state:
     class DepreciationScheduleManager:
         def __init__(self):
@@ -130,17 +119,9 @@ with st.sidebar:
             manager.edit_asset(index, description, tax_basis, placed_in_service_date.strftime("%Y-%m-%d"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
             st.success(f"Asset '{description}' updated successfully!")
 
-st.header("Assets Table")
 if manager.assets:
     df = manager.export_asset_list()
-    ag_grid_options = {
-        "editable": False,
-        "filter": True,
-        "sortable": True,
-        "resizable": True,
-        "selection_mode": "single"
-    }
-    grid = ag.AgGrid(df, grid_options=ag_grid_options, theme="streamlit")
+    st.dataframe(df)  # Replaced AgGrid with a basic Streamlit table for compatibility
 
 if st.button("Export All Assets"):
     df = manager.export_asset_list()
