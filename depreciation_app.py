@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import io
 
+st.header("Assets Table")
 if 'manager' not in st.session_state:
     class DepreciationScheduleManager:
         def __init__(self):
@@ -39,9 +40,6 @@ if 'manager' not in st.session_state:
                 "section_179": section_179
             }
 
-        def delete_asset(self, index):
-            del self.assets[index]
-
         def export_asset_list(self):
             df = pd.DataFrame(self.assets)
             df["placed_in_service_date"] = df["placed_in_service_date"].dt.strftime("%Y-%m-%d")
@@ -64,6 +62,8 @@ if 'manager' not in st.session_state:
 
 manager = st.session_state.manager
 
+st.title("Depreciation Schedule Manager")
+
 with st.sidebar:
     st.header("Add or Edit an Asset")
     asset_options = [f"{i + 1}: {asset['description']}" for i, asset in enumerate(manager.assets)]
@@ -80,88 +80,48 @@ with st.sidebar:
     }
 
     if selected_asset == "Add New Asset":
-        description = st.text_input("Asset Description", key="description")
-        tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0, key="tax_basis")
-        placed_in_service_date = st.date_input("Placed in Service Date", min_value=datetime(1900, 1, 1), key="placed_in_service_date")
-        recovery_period_label = st.selectbox("Recovery Period", list(recovery_periods.keys()), key="recovery_period_label")
+        description = st.text_input("Asset Description")
+        tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0)
+        placed_in_service_date = st.date_input("Placed in Service Date", min_value=datetime(1900, 1, 1))
+        recovery_period_label = st.selectbox("Recovery Period", list(recovery_periods.keys()))
         recovery_period = recovery_periods[recovery_period_label]
 
         st.subheader("IRS Safe Harbors")
-        safe_harbor_small = st.checkbox("Safe Harbor for Small Taxpayers", help="Applicable to small taxpayers who meet specific eligibility criteria for routine repairs and maintenance.", key="safe_harbor_small")
-        safe_harbor_de_minimis = st.checkbox("De Minimis Safe Harbor", help="Allows taxpayers to deduct certain expenses for tangible property up to a specified dollar amount.", key="safe_harbor_de_minimis")
-        safe_harbor_routine = st.checkbox("Routine Maintenance Safe Harbor", help="Covers recurring maintenance activities expected to be performed as part of normal operations.", key="safe_harbor_routine")
+        safe_harbor_small = st.checkbox("Safe Harbor for Small Taxpayers", help="Applicable to small taxpayers who meet specific eligibility criteria for routine repairs and maintenance.")
+        safe_harbor_de_minimis = st.checkbox("De Minimis Safe Harbor", help="Allows taxpayers to deduct certain expenses for tangible property up to a specified dollar amount.")
+        safe_harbor_routine = st.checkbox("Routine Maintenance Safe Harbor", help="Covers recurring maintenance activities expected to be performed as part of normal operations.")
 
-        bonus_depreciation = st.checkbox("Bonus Depreciation", help="Allows a percentage of the asset cost to be deducted immediately in the year placed in service.", key="bonus_depreciation")
-        section_179 = st.checkbox("Section 179", help="Permits immediate expensing of certain asset purchases up to a specified dollar limit.", key="section_179")
+        bonus_depreciation = st.checkbox("Bonus Depreciation", help="Allows a percentage of the asset cost to be deducted immediately in the year placed in service.")
+        section_179 = st.checkbox("Section 179", help="Permits immediate expensing of certain asset purchases up to a specified dollar limit.")
 
         if st.button("Add Asset"):
-            manager.add_asset(
-                st.session_state.description,
-                st.session_state.tax_basis,
-                st.session_state.placed_in_service_date.strftime("%Y-%m-%d"),
-                recovery_period,
-                st.session_state.safe_harbor_small,
-                st.session_state.safe_harbor_de_minimis,
-                st.session_state.safe_harbor_routine,
-                st.session_state.bonus_depreciation,
-                st.session_state.section_179
-            )
-
-            # Reset fields after adding asset
-            st.session_state.description = ""
-            st.session_state.tax_basis = 0.0
-            st.session_state.placed_in_service_date = datetime.today()
-            st.session_state.recovery_period_label = list(recovery_periods.keys())[0]
-            st.session_state.safe_harbor_small = False
-            st.session_state.safe_harbor_de_minimis = False
-            st.session_state.safe_harbor_routine = False
-            st.session_state.bonus_depreciation = False
-            st.session_state.section_179 = False
-
+            manager.add_asset(description, tax_basis, placed_in_service_date.strftime("%Y-%m-%d"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
             st.success(f"Asset '{description}' added successfully!")
     else:
         index = int(selected_asset.split(":")[0]) - 1
         asset = manager.assets[index]
 
-        description = st.text_input("Asset Description", value=asset["description"], key="edit_description")
-        tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0, value=asset["tax_basis"], key="edit_tax_basis")
-        placed_in_service_date = st.date_input("Placed in Service Date", value=asset["placed_in_service_date"], key="edit_placed_in_service_date")
-        recovery_period_label = st.selectbox("Recovery Period", list(recovery_periods.keys()), index=list(recovery_periods.values()).index(asset["recovery_period"]), key="edit_recovery_period_label")
+        description = st.text_input("Asset Description", value=asset["description"])
+        tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0, value=asset["tax_basis"])
+        placed_in_service_date = st.date_input("Placed in Service Date", value=asset["placed_in_service_date"])
+        recovery_period_label = st.selectbox("Recovery Period", list(recovery_periods.keys()), index=list(recovery_periods.values()).index(asset["recovery_period"]))
         recovery_period = recovery_periods[recovery_period_label]
 
         st.subheader("IRS Safe Harbors")
-        safe_harbor_small = st.checkbox("Safe Harbor for Small Taxpayers", value=asset["safe_harbor_small"], help="Applicable to small taxpayers who meet specific eligibility criteria for routine repairs and maintenance.", key="edit_safe_harbor_small")
-        safe_harbor_de_minimis = st.checkbox("De Minimis Safe Harbor", value=asset["safe_harbor_de_minimis"], help="Allows taxpayers to deduct certain expenses for tangible property up to a specified dollar amount.", key="edit_safe_harbor_de_minimis")
-        safe_harbor_routine = st.checkbox("Routine Maintenance Safe Harbor", value=asset["safe_harbor_routine"], help="Covers recurring maintenance activities expected to be performed as part of normal operations.", key="edit_safe_harbor_routine")
+        safe_harbor_small = st.checkbox("Safe Harbor for Small Taxpayers", value=asset["safe_harbor_small"], help="Applicable to small taxpayers who meet specific eligibility criteria for routine repairs and maintenance.")
+        safe_harbor_de_minimis = st.checkbox("De Minimis Safe Harbor", value=asset["safe_harbor_de_minimis"], help="Allows taxpayers to deduct certain expenses for tangible property up to a specified dollar amount.")
+        safe_harbor_routine = st.checkbox("Routine Maintenance Safe Harbor", value=asset["safe_harbor_routine"], help="Covers recurring maintenance activities expected to be performed as part of normal operations.")
 
-        bonus_depreciation = st.checkbox("Bonus Depreciation", value=asset["bonus_depreciation"], help="Allows a percentage of the asset cost to be deducted immediately in the year placed in service.", key="edit_bonus_depreciation")
-        section_179 = st.checkbox("Section 179", value=asset["section_179"], help="Permits immediate expensing of certain asset purchases up to a specified dollar limit.", key="edit_section_179")
+        bonus_depreciation = st.checkbox("Bonus Depreciation", value=asset["bonus_depreciation"], help="Allows a percentage of the asset cost to be deducted immediately in the year placed in service.")
+        section_179 = st.checkbox("Section 179", value=asset["section_179"], help="Permits immediate expensing of certain asset purchases up to a specified dollar limit.")
 
         if st.button("Save Changes"):
-            manager.edit_asset(
-                index,
-                st.session_state.edit_description,
-                st.session_state.edit_tax_basis,
-                st.session_state.edit_placed_in_service_date.strftime("%Y-%m-%d"),
-                recovery_period,
-                st.session_state.edit_safe_harbor_small,
-                st.session_state.edit_safe_harbor_de_minimis,
-                st.session_state.edit_safe_harbor_routine,
-                st.session_state.edit_bonus_depreciation,
-                st.session_state.edit_section_179
-            )
+            manager.edit_asset(index, description, tax_basis, placed_in_service_date.strftime("%Y-%m-%d"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
             st.success(f"Asset '{description}' updated successfully!")
 
 if manager.assets:
     df = manager.export_asset_list()
-    df["Delete"] = [f"Delete {i}" for i in range(len(df))]  # Add a delete column
-
-    for i in range(len(df)):
-        col1, col2, col3 = st.columns([4, 1, 1])
-        col1.write(df.loc[i, "Asset Description"])
-        if col3.button(f"X", key=f"delete_{i}"):
-            manager.delete_asset(i)
-            st.experimental_rerun()
+    st.dataframe(df)  # Replaced AgGrid with a basic Streamlit table for compatibility
 
 if st.button("Export All Assets"):
     df = manager.export_asset_list()
