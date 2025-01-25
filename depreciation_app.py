@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 import io
+import streamlit_aggrid as ag
 
 # Use Streamlit's session state to persist the manager across reruns
 if 'manager' not in st.session_state:
@@ -43,6 +44,19 @@ if 'manager' not in st.session_state:
         def export_asset_list(self):
             df = pd.DataFrame(self.assets)
             df["placed_in_service_date"] = df["placed_in_service_date"].dt.strftime("%Y-%m-%d")
+            df.rename(columns={
+                "description": "Asset Description",
+                "tax_basis": "Tax Basis ($)",
+                "placed_in_service_date": "Placed in Service Date",
+                "recovery_period": "Recovery Period (Years)",
+                "monthly_depreciation": "Monthly Depreciation ($)",
+                "yearly_depreciation": "Yearly Depreciation ($)",
+                "safe_harbor_small": "Safe Harbor for Small Taxpayers",
+                "safe_harbor_de_minimis": "De Minimis Safe Harbor",
+                "safe_harbor_routine": "Routine Maintenance Safe Harbor",
+                "bonus_depreciation": "Bonus Depreciation",
+                "section_179": "Section 179"
+            }, inplace=True)
             return df
 
     st.session_state.manager = DepreciationScheduleManager()
@@ -109,7 +123,14 @@ with st.sidebar:
 st.header("Assets Table")
 if manager.assets:
     df = manager.export_asset_list()
-    st.dataframe(df)
+    ag_grid_options = {
+        "editable": False,
+        "filter": True,
+        "sortable": True,
+        "resizable": True,
+        "selection_mode": "single"
+    }
+    grid = ag.AgGrid(df, grid_options=ag_grid_options, theme="streamlit")
 
 if st.button("Export All Assets"):
     df = manager.export_asset_list()
