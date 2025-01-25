@@ -2,7 +2,17 @@ from datetime import datetime, timedelta
 import pandas as pd
 import streamlit as st
 import io
-import streamlit_aggrid as ag
+from st_aggrid import AgGrid, GridOptionsBuilder
+
+st.header("Assets Table")
+if manager.assets:
+    df = manager.export_asset_list()
+    gb = GridOptionsBuilder.from_dataframe(df)
+    gb.configure_default_column(editable=False, filterable=True, sortable=True, resizable=True)
+    gb.configure_selection('single', use_checkbox=True)
+    grid_options = gb.build()
+
+    AgGrid(df, gridOptions=grid_options, theme='streamlit', enable_enterprise_modules=False)
 
 # Use Streamlit's session state to persist the manager across reruns
 if 'manager' not in st.session_state:
