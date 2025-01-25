@@ -154,12 +154,14 @@ with st.sidebar:
 
 if manager.assets:
     df = manager.export_asset_list()
-    for i, row in df.iterrows():
-        delete_button = st.button(f"Delete {row['Asset Description']}", key=f"delete_{i}")
-        if delete_button:
+    df["Delete"] = [f"Delete {i}" for i in range(len(df))]  # Add a delete column
+
+    for i in range(len(df)):
+        col1, col2, col3 = st.columns([4, 1, 1])
+        col1.write(df.loc[i, "Asset Description"])
+        if col3.button(f"X", key=f"delete_{i}"):
             manager.delete_asset(i)
             st.experimental_rerun()
-    st.dataframe(df)
 
 if st.button("Export All Assets"):
     df = manager.export_asset_list()
