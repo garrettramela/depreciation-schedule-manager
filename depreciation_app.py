@@ -82,10 +82,23 @@ with st.sidebar:
     if st.button("Add Asset"):
         manager.add_asset(address, city, state, zipcode, description, tax_basis, placed_in_service_date.strftime("%m-%d-%Y"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
         st.success(f"Asset '{description}' added successfully!")
+        
+        # Reset input fields
+        st.session_state["address"] = ""
+        st.session_state["city"] = ""
+        st.session_state["state"] = ""
+        st.session_state["zipcode"] = ""
+        st.session_state["description"] = ""
+        st.session_state["tax_basis"] = 0.0
+        st.session_state["safe_harbor_small"] = False
+        st.session_state["safe_harbor_de_minimis"] = False
+        st.session_state["safe_harbor_routine"] = False
+        st.session_state["bonus_depreciation"] = False
+        st.session_state["section_179"] = False
 
 if manager.assets:
     df = manager.export_asset_list()
-    st.dataframe(df)
+    st.dataframe(df, use_container_width=True)
 
 if st.button("Export Capital Assets"):
     df = manager.export_asset_list()
