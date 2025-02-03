@@ -69,7 +69,7 @@ with st.sidebar:
     asset_options = [f"{i + 1}: {asset['description']}" for i, asset in enumerate(manager.assets)]
     selected_asset = st.selectbox("Select an asset to edit or leave blank to add a new one", ["Add New Asset"] + asset_options)
 
-    # IRS standard recovery periods sorted by duration
+    # Various IRS recovery periods
     recovery_periods = {
         "Equipment (5 years)": 5,
         "Vehicles (5 years)": 5,
@@ -82,7 +82,7 @@ with st.sidebar:
     if selected_asset == "Add New Asset":
         description = st.text_input("Asset Description")
         tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0)
-        placed_in_service_date = st.date_input("Placed in Service Date", min_value=datetime(1900, 1, 1))
+        placed_in_service_date = st.date_input("Placed in Service Date", value="today", format="MM/DD/YYYY", help="Generally, property is considered placed in service when it is ready and available for a specific use, regardless of whether or not it is actually used at the time.")
         recovery_period_label = st.selectbox("Recovery Period", list(recovery_periods.keys()))
         recovery_period = recovery_periods[recovery_period_label]
 
