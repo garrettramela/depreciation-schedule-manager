@@ -99,11 +99,3 @@ with st.sidebar:
 if manager.assets:
     df = manager.export_asset_list()
     st.dataframe(df, use_container_width=True)
-
-if st.button("Export Capital Assets"):
-    df = manager.export_asset_list()
-    buffer = io.BytesIO()
-    with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
-        df.to_excel(writer, index=False, sheet_name="Assets")
-    buffer.seek(0)
-    st.download_button("Download Depreciation Schedule", buffer, file_name="depreciation-schedule.xlsx", mime="application/vnd.ms-excel")
