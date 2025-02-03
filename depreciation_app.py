@@ -129,4 +129,4 @@ if st.button("Export All Assets"):
     with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
         df.to_excel(writer, index=False, sheet_name="Assets")
     buffer.seek(0)
-    st.download_button("Download Asset List", buffer, file_name="assets.xlsx", mime="application/vnd.ms-excel")
+    st.download_button("Download Depreciation Schedule", buffer, file_name="depreciation-schedule.xlsx", mime="application/vnd.ms-excel")
