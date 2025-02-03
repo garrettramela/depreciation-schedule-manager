@@ -13,7 +13,7 @@ if 'manager' not in st.session_state:
             asset = {
                 "description": description,
                 "tax_basis": tax_basis,
-                "placed_in_service_date": datetime.strptime(placed_in_service_date, "%Y-%m-%d"),
+                "placed_in_service_date": datetime.strptime(placed_in_service_date, "%m-%d-%Y"),
                 "recovery_period": recovery_period,
                 "monthly_depreciation": tax_basis / (recovery_period * 12),
                 "yearly_depreciation": tax_basis / recovery_period,
@@ -29,7 +29,7 @@ if 'manager' not in st.session_state:
             self.assets[index] = {
                 "description": description,
                 "tax_basis": tax_basis,
-                "placed_in_service_date": datetime.strptime(placed_in_service_date, "%Y-%m-%d"),
+                "placed_in_service_date": datetime.strptime(placed_in_service_date, "%m-%d-%Y"),
                 "recovery_period": recovery_period,
                 "monthly_depreciation": tax_basis / (recovery_period * 12),
                 "yearly_depreciation": tax_basis / recovery_period,
@@ -42,7 +42,7 @@ if 'manager' not in st.session_state:
 
         def export_asset_list(self):
             df = pd.DataFrame(self.assets)
-            df["placed_in_service_date"] = df["placed_in_service_date"].dt.strftime("%Y-%m-%d")
+            df["placed_in_service_date"] = df["placed_in_service_date"].dt.strftime("%m-%d-%Y")
             df.rename(columns={
                 "description": "Asset Description",
                 "tax_basis": "Tax Basis ($)",
@@ -116,7 +116,7 @@ with st.sidebar:
         section_179 = st.checkbox("Section 179", value=asset["section_179"], help="Permits immediate expensing of certain asset purchases up to a specified dollar limit.")
 
         if st.button("Save Changes"):
-            manager.edit_asset(index, description, tax_basis, placed_in_service_date.strftime("%Y-%m-%d"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
+            manager.edit_asset(index, description, tax_basis, placed_in_service_date.strftime("%m-%d-%Y"), recovery_period, safe_harbor_small, safe_harbor_de_minimis, safe_harbor_routine, bonus_depreciation, section_179)
             st.success(f"Asset '{description}' updated successfully!")
 
 if manager.assets:
