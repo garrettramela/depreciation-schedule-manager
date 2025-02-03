@@ -3,7 +3,7 @@ import pandas as pd
 import streamlit as st
 import io
 
-st.header("Assets Table")
+st.header("Capital Assets")
 if 'manager' not in st.session_state:
     class DepreciationScheduleManager:
         def __init__(self):
@@ -62,7 +62,7 @@ if 'manager' not in st.session_state:
 
 manager = st.session_state.manager
 
-st.title("Depreciation Schedule Manager")
+st.title("Depreciation Schedule")
 
 with st.sidebar:
     st.header("Add or Edit an Asset")
