@@ -61,13 +61,13 @@ with st.sidebar:
     st.header("Add an Asset")
     
     st.subheader("Property Address")
-    address = st.text_input("Street Address", help="Enter the street address of the property.")
-    city = st.text_input("City", help="Enter the city where the property is located.")
-    state = st.text_input("State", help="Enter the state abbreviation (e.g., TX, CA, NY).")
-    zipcode = st.text_input("Zipcode", help="Enter the 5-digit ZIP code of the property.")
+    address = st.text_input("Street Address", placeholder="123 Main St", help="Enter the street address of the property.")
+    city = st.text_input("City", placeholder="Washington", help="Enter the city where the property is located.")
+    state = st.text_input("State", placeholder="DC", help="Enter the state abbreviation (e.g., TX, CA, NY).")
+    zipcode = st.text_input("Zipcode", placeholder="20001", help="Enter the 5-digit ZIP code of the property.")
     
     st.subheader("Schedule Inputs")
-    description = st.text_input("Asset Description", help="Provide a brief description of the asset (e.g., HVAC system, Roof Replacement).")
+    description = st.text_input("Asset Description", placeholder="Roof", help="Provide a brief description of the asset (e.g., HVAC system, Roof Replacement).")
     tax_basis = st.number_input("Tax Basis ($)", min_value=0.0, step=100.0, help="Enter the cost basis of the asset for depreciation purposes.")
     placed_in_service_date = st.date_input("Placed in Service Date", format="MM/DD/YYYY", help="Select the date the asset was placed into service.")
     recovery_period = st.selectbox("Recovery Period", [5, 7, 15, 27.5, 39], help="Select the IRS-defined recovery period for this asset.")
